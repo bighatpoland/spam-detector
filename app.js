@@ -27,8 +27,8 @@ async function detectSpam() {
     }
 
     // Check if API key is configured
-    if (!CONFIG.OPENAI_API_KEY || CONFIG.OPENAI_API_KEY === 'your-openai-api-key-here') {
-        alert('Please configure your OpenAI API key in config.js file.');
+    if (!CONFIG.COMET_API_KEY || CONFIG.COMET_API_KEY === 'your-comet-api-key-here') {
+        alert('Please configure your COMET API key in config.js file.');
         return;
     }
 
@@ -37,50 +37,44 @@ async function detectSpam() {
     result.style.display = 'none';
 
     try {
-        // Call OpenAI API
+        // Call COMET API
         const isSpam = await checkSpamWithLLM(text);
         
         // Display result
         displayResult(isSpam);
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while checking for spam. Please check the console for details.');
+        displayError(error.message);
     } finally {
         setLoadingState(false);
     }
 }
 
 async function checkSpamWithLLM(text) {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Try Cohere API endpoint
+    const response = await fetch('https://api.cohere.com/v1/chat', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${CONFIG.OPENAI_API_KEY}`
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'Authorization': `Bearer ${CONFIG.COMET_API_KEY}`
         },
         body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: [
-                {
-                    role: 'system',
-                    content: 'You are a spam detection assistant. Analyze the given text and determine if it is spam or not. Respond with ONLY "SPAM" if it is spam, or "NOT_SPAM" if it is not spam. Consider the following as spam indicators: unsolicited advertisements, phishing attempts, scams, excessive promotional content, suspicious links, urgency tactics, too-good-to-be-true offers, requests for personal information, or poor grammar with marketing intent.'
-                },
-                {
-                    role: 'user',
-                    content: `Analyze this text and determine if it's spam:\n\n"${text}"`
-                }
-            ],
+            model: 'command-r-08-2024',
+            message: `Analyze this text and determine if it's spam. Respond with ONLY "SPAM" if it is spam, or "NOT_SPAM" if it is not spam.\n\nText to analyze: "${text}"`,
             temperature: 0.3,
             max_tokens: 10
         })
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error?.message || errorData.message || response.statusText;
+        throw new Error(errorMessage);
     }
 
     const data = await response.json();
-    const answer = data.choices[0].message.content.trim().toUpperCase();
+    const answer = data.text ? data.text.trim().toUpperCase() : '';
     
     return answer.includes('SPAM') && !answer.includes('NOT_SPAM');
 }
@@ -99,6 +93,13 @@ function displayResult(isSpam) {
     }
 }
 
+function displayError(message) {
+    result.style.display = 'flex';
+    result.className = 'result spam';
+    resultIcon.textContent = '❌';
+    resultText.textContent = `Error: ${message}`;
+}
+
 function setLoadingState(isLoading) {
     if (isLoading) {
         detectBtn.disabled = true;
@@ -106,7 +107,7 @@ function setLoadingState(isLoading) {
         loader.style.display = 'block';
     } else {
         detectBtn.disabled = false;
-        buttonText.textContent = 'Detect Spam';
+        buttonText.textContent = 'Analyze';
         loader.style.display = 'none';
     }
 }
