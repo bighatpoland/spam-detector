@@ -86,15 +86,15 @@ async function checkSpamWithLLM(text) {
 }
 
 function displayResult(isSpam) {
-    result.style.display = 'block';
+    result.style.display = 'flex';
     
     if (isSpam) {
         result.className = 'result spam';
-        resultIcon.textContent = '🚫';
+        resultIcon.textContent = '⚠️';
         resultText.textContent = 'This is spam';
     } else {
         result.className = 'result not-spam';
-        resultIcon.textContent = '✅';
+        resultIcon.textContent = '✓';
         resultText.textContent = 'This is not spam';
     }
 }

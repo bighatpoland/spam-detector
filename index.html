@@ -8,38 +8,32 @@
 </head>
 <body>
     <div class="container">
-        <h1>🛡️ Spam Detector</h1>
-        <p class="subtitle">Paste your text below and let AI detect if it's spam</p>
+        <header>
+            <h1>Spam Detector</h1>
+            <p class="subtitle">AI-powered spam detection</p>
+        </header>
         
-        <div class="input-section">
+        <main>
             <textarea 
                 id="textInput" 
                 placeholder="Paste your text here..."
-                rows="8"
+                rows="10"
             ></textarea>
-        </div>
 
-        <button id="detectBtn" class="detect-button">
-            <span class="button-text">Detect Spam</span>
-            <span class="loader" style="display: none;"></span>
-        </button>
+            <button id="detectBtn" class="detect-button">
+                <span class="button-text">Analyze</span>
+                <span class="loader" style="display: none;"></span>
+            </button>
 
-        <div id="result" class="result" style="display: none;">
-            <div class="result-content">
+            <div id="result" class="result" style="display: none;">
                 <span class="result-icon"></span>
                 <span class="result-text"></span>
             </div>
-        </div>
+        </main>
 
-        <div class="instructions">
-            <h3>How to use:</h3>
-            <ol>
-                <li>Set your OpenAI API key in <code>config.js</code></li>
-                <li>Paste any text you want to check</li>
-                <li>Click "Detect Spam" button</li>
-                <li>View the result</li>
-            </ol>
-        </div>
+        <footer>
+            <p>⚡ Powered by OpenAI GPT</p>
+        </footer>
     </div>
 
     <script src="config.js"></script>
