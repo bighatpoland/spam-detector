@@ -20,9 +20,14 @@ textInput.addEventListener('keydown', (e) => {
 async function detectSpam() {
     const text = textInput.value.trim();
     
-    // Validate input
+    // Validate input length to prevent abuse
     if (!text) {
         alert('Please enter some text to analyze.');
+        return;
+    }
+
+    if (text.length > 5000) {
+        alert('Text is too long. Maximum 5000 characters allowed.');
         return;
     }
 
@@ -44,7 +49,9 @@ async function detectSpam() {
         displayResult(isSpam);
     } catch (error) {
         console.error('Error:', error);
-        displayError(error.message);
+        // Sanitize error message to prevent XSS
+        const safeMessage = String(error.message).replace(/[<>]/g, '');
+        displayError(safeMessage);
     } finally {
         setLoadingState(false);
     }
@@ -97,6 +104,7 @@ function displayError(message) {
     result.style.display = 'flex';
     result.className = 'result spam';
     resultIcon.textContent = '❌';
+    // Use textContent instead of innerHTML to prevent XSS
     resultText.textContent = `Error: ${message}`;
 }
 
