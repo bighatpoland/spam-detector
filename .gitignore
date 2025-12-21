@@ -1,0 +1,12 @@
+# Config file with API key - DO NOT COMMIT
+config.js
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
