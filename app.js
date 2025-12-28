@@ -17,6 +17,16 @@ textInput.addEventListener('keydown', (e) => {
     }
 });
 
+// Auto-analyze on paste
+textInput.addEventListener('paste', () => {
+    // Use setTimeout to ensure the pasted text is available
+    setTimeout(() => {
+        if (textInput.value.trim()) {
+            detectSpam();
+        }
+    }, 0);
+});
+
 async function detectSpam() {
     const text = textInput.value.trim();
     
